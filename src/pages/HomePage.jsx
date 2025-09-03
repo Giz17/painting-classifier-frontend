@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Sparkles, LogIn, LogOut } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate} from "react-router-dom";
 import Aurora from "../components/Aurora";
 import logo from "../assets/BA.png";
 import splashLeft from "../assets/splash-left.png";
@@ -10,7 +10,6 @@ import Footer from "../components/footer";
 
 const HomePage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
   const [user, setUser] = useState(null);
 
 

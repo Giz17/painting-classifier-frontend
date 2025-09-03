@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, Calendar, Percent, Tag, FileText, Palette } from 'lucide-react';
 import Aurora from '../components/Aurora';
-import Footer from '../components/Footer.jsx';
+import Footer from '../components/footer.jsx';
 
 const PredictionDetail = () => {
   const location = useLocation();

@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { LoaderCircle, Download, X, Palette } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate} from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import ba from '../assets/ab.jpg'; // Background image
 import Image from '../assets/4.png'
-import Footer from '../components/Footer'; // Importing Footer
+import Footer from '../components/footer'; // Importing Footer
 import API_BASE_URL from "../utils/config";
 
 

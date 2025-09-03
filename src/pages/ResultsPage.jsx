@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { Palette, BrainCircuit, Upload, ArrowRight } from 'lucide-react';
 import ActionButton from '../components/ActionButton';
 import Aurora from '../components/Aurora';
-import Footer from '../components/Footer'; // Footer component
+import Footer from '../components/footer'; // Footer component
 
 const ResultsPage = () => {
   const navigate = useNavigate();

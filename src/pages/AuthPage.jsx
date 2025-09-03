@@ -6,7 +6,7 @@ import logo from '../assets/ba.png';
 import splashLeft from '../assets/splash-left.png';
 import splashRight from '../assets/splash-right.png';
 import '../styles/loader.css'; // ✅ Loader styles
-import Footer from '../components/Footer'; 
+import Footer from '../components/footer'; 
 import CryptoJS from 'crypto-js'; // ✅ Add this import
 
 // Define the hashing function

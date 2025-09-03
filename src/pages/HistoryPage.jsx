@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import { Trash2, History, Search } from 'lucide-react';
 import ba from '../assets/ab.jpg'; 
-import Footer from '../components/Footer'; 
+import Footer from '../components/footer'; 
 import Image from '../assets/4.png'; 
 import API_BASE_URL from "../utils/config";
 const HistoryPage = () => {

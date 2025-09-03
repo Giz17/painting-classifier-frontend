@@ -1,8 +1,8 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+
 
 import Aurora from "../components/Aurora";
-import Footer from "../components/Footer"; // <-- importing footer component
+import Footer from "../components/footer"; // <-- importing footer component
 
 
 const items = [
@@ -49,8 +49,7 @@ const items = [
 ];
 
 const About = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
+  
 
   return (
     <div className="bg-white dark:bg-gray-900">
