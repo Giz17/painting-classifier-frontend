@@ -1,0 +1,98 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+
+.logo {
+  height: 6em;
+  padding: 1.5em;
+  will-change: filter;
+  transition: filter 300ms;
+}
+.logo:hover {
+  filter: drop-shadow(0 0 2em #646cffaa);
+}
+.logo.react:hover {
+  filter: drop-shadow(0 0 2em #61dafbaa);
+}
+
+@keyframes logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  a:nth-of-type(2) .logo {
+    animation: logo-spin infinite 20s linear;
+  }
+}
+
+.card {
+  padding: 2em;
+}
+
+.read-the-docs {
+  color: #888;
+}
+/* Loader Styles - From Uiverse.io by Ashon-G */
+.loader {
+  --hue: 210;
+  --size: 100px;
+  --border: 10px;
+  --speed: 1s;
+  --blur: var(--border);
+}
+
+.loader {
+  width: var(--border);
+  aspect-ratio: 1;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  --y: calc((var(--size) * -0.5) + (var(--border) * 0.5));
+  transform: rotate(0deg) translateY(var(--y));
+  animation: spin var(--speed) infinite linear;
+}
+
+.loader::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--border) * -0.5);
+  border-radius: 50%;
+  background: white;
+  filter: blur(var(--blur));
+  z-index: -1;
+}
+
+.loader::after {
+  content: "";
+  width: var(--size);
+  aspect-ratio: 1;
+  position: absolute;
+  top: 0%;
+  left: 50%;
+  translate: -50% 0;
+  background: conic-gradient(
+    white,
+    hsl(var(--hue), 100%, 70%),
+    hsl(var(--hue), 100%, 10%),
+    transparent 65%
+  );
+  border-radius: 50%;
+  mask: radial-gradient(
+    transparent calc(((var(--size) * 0.5) - var(--border)) - 1px),
+    white calc((var(--size) * 0.5) - var(--border))
+  );
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(-360deg) translateY(var(--y));
+  }
+}
