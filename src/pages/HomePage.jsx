@@ -6,7 +6,7 @@ import logo from "../assets/BA.png";
 import splashLeft from "../assets/splash-left.png";
 import splashRight from "../assets/splash-right.png";
 import { supabase } from "../lib/supabase";
-import Footer from '../components/Footer'; 
+import Footer from "../components/footer"; 
 
 const HomePage = () => {
   const navigate = useNavigate();
