@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Home, History, Sun, Moon, Info, Image, Wand2 } from "lucide-react";
-import logo from "../assets/BA.png";
+import logo from "../assets/ba.png";
 
 // Navigation Button
 const NavButton = ({ to, icon, text, isActive, onClick }) => {
