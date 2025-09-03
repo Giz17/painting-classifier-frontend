@@ -1,5 +1,5 @@
 import { supabase } from '../lib/supabase'; // adjust path as needed
-
+import API_BASE_URL from "./config";
 export const classifyImage = async (file) => {
   // Get current user session
   const {
@@ -17,7 +17,7 @@ export const classifyImage = async (file) => {
   formData.append('file', file);
   formData.append('user_email', user_email); // pass to FastAPI
 
-  const res = await fetch('http://localhost:8000/predict/', {
+  const res = await fetch(`${API_BASE_URL}/predict/`, {
     method: 'POST',
     body: formData,
   });

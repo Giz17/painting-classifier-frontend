@@ -12,6 +12,7 @@ import candyImg from '../assets/style1.jpg';
 import mosaicImg from '../assets/style4.jpg';
 import udnieImg from '../assets/style7.jpg';
 import rainPrincessImg from '../assets/style5.jpg';
+import API_BASE_URL from "../utils/config";
 
 console.log("Image URL:", Image); // Add this line
 
@@ -118,7 +119,7 @@ const StyleTransferPage = () => {
 
   const fetchAvailableStyles = async () => {
     try {
-      const response = await fetch('http://localhost:8000/styles');
+      const response = await fetch(`${API_BASE_URL}/styles`);
       const styles = await response.json();
 
       // Merge fetched styles with local definitions

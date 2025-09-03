@@ -16,7 +16,7 @@ const items = [
   },
   {
     image: "https://i.pravatar.cc/300?img=2",
-    title: "Giselle C. Fernandes",
+    title: "Giselle Fernandes",
     subtitle: "Backend Engineer",
     borderColor: "#10B981",
     gradient: "linear-gradient(180deg, #10B981, #000)",
@@ -131,7 +131,7 @@ const About = () => {
                   border: `3px solid ${item.borderColor}`,
                 }}
               />
-              <h3 className="text-lg font-semibold">{item.title}</h3>
+              <h3 className="text-lg font-semibold text-gray-200">{item.title}</h3>
               <p className="text-sm text-gray-200">{item.subtitle}</p>
               <p className="text-xs text-gray-400">{item.handle}</p>
             </a>

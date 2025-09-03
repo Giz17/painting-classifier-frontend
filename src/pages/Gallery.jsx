@@ -5,13 +5,8 @@ import { supabase } from '../lib/supabase';
 import ba from '../assets/ab.jpg'; // Background image
 import Image from '../assets/4.png'
 import Footer from '../components/Footer'; // Importing Footer
+import API_BASE_URL from "../utils/config";
 
-const links = [
-  { name: 'Home', path: '/' },
-  { name: 'Gallery', path: '/gallery' },
-  { name: 'History', path: '/history' },
-  { name: 'About', path: '/about' },
-];
 
 const GalleryPage = ({ setPage }) => {
   const [groupedImages, setGroupedImages] = useState({});
@@ -33,7 +28,7 @@ const GalleryPage = ({ setPage }) => {
 
       const user_email = user.email;
       try {
-        const response = await fetch(`http://localhost:8000/gallery/?user_email=${user_email}`);
+        const response = await fetch(`${API_BASE_URL}/gallery/?user_email=${user_email}`);
         const data = await response.json();
         setGroupedImages(data || {});
       } catch (err) {

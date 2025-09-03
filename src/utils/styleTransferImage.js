@@ -1,11 +1,11 @@
 import { supabase } from '../lib/supabase'; // adjust path as needed
-
+import API_BASE_URL from "./config";
 /**
  * Style Transfer Image utility functions
  * Sends image and style to backend for neural style transfer
  */
 
-const API_BASE_URL = 'http://localhost:8000';
+
 
 /**
  * Transfer style to an image with user authentication
@@ -86,24 +86,5 @@ export const styleTransferImage = async (imageFile, styleName) => {
   } catch (error) {
     console.error('Style transfer error:', error);
     throw new Error(error.message || 'Failed to apply style transfer');
-  }
-};
-
-/**
- * Fetch available styles from backend
- * @returns {Promise<Array>} Array of available style names/objects
- */
-export const fetchAvailableStyles = async () => {
-  try {
-    const response = await fetch(`${API_BASE_URL}/styles`);
-    
-    if (!response.ok) {
-      throw new Error(`Failed to fetch styles: ${response.status}`);
-    }
-
-    return await response.json();
-  } catch (error) {
-    console.error('Error fetching styles:', error);
-    throw new Error('Failed to load available styles');
   }
 };

@@ -5,7 +5,7 @@ import { Trash2, History, Search } from 'lucide-react';
 import ba from '../assets/ab.jpg'; 
 import Footer from '../components/Footer'; 
 import Image from '../assets/4.png'; 
-
+import API_BASE_URL from "../utils/config";
 const HistoryPage = () => {
   const [history, setHistory] = useState([]);
   const [filter, setFilter] = useState('');
@@ -33,8 +33,8 @@ const HistoryPage = () => {
       if (!userEmail) return;
 
       try {
-        const res = await fetch(
-          `http://localhost:8000/history/?user_email=${encodeURIComponent(userEmail)}`
+        const res = 
+          await fetch(`${API_BASE_URL}/history/?user_email=${encodeURIComponent(userEmail)}`
         );
         const result = await res.json();
         setHistory(result.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)));
