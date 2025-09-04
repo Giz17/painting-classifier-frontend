@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Palette, Download, Loader2, Camera, X, ArrowRight, Wand2, ArrowLeft, Smile, Droplets, Zap, Check } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Orb from '../components/Orb';
-import Footer from '../components/footer';
+import Footer from '../components/Footer';
 import { supabase } from '../lib/supabase';
 import { styleTransferImage } from '../utils/styleTransferImage';
 import waImage from '../assets/wa.jpg'; // Light mode background
@@ -12,7 +12,6 @@ import candyImg from '../assets/style1.jpg';
 import mosaicImg from '../assets/style4.jpg';
 import udnieImg from '../assets/style7.jpg';
 import rainPrincessImg from '../assets/style5.jpg';
-import API_BASE_URL from "../utils/config";
 
 console.log("Image URL:", Image); // Add this line
 
@@ -119,7 +118,7 @@ const StyleTransferPage = () => {
 
   const fetchAvailableStyles = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/styles`);
+      const response = await fetch('http://localhost:8000/styles');
       const styles = await response.json();
 
       // Merge fetched styles with local definitions
@@ -157,58 +156,56 @@ const StyleTransferPage = () => {
     reader.readAsDataURL(file);
   };
 
-  const openCamera = async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-      setStream(mediaStream);
-      setIsCameraOpen(true);
-      if (videoRef.current) videoRef.current.srcObject = mediaStream;
-    } catch (error) {
-      console.error('Camera error:', error);
-      setError('Cannot access camera. Check permissions.');
-    }
-  };
-
-  const closeCamera = () => {
-    if (stream) stream.getTracks().forEach(track => track.stop());
-    setIsCameraOpen(false);
-    setStream(null);
-  };
-
-  const handleCapture = () => {
-  if (!videoRef.current || !canvasRef.current) return;
-  const video = videoRef.current;
-
-  // ✅ Ensure video is ready
-  if (video.videoWidth === 0 || video.videoHeight === 0) {
-    console.error("❌ Video not ready yet for capture.");
-    alert("Camera is not ready. Please try again.");
-    return;
+  // --- Camera Controls ---
+const openCamera = async () => {
+  try {
+    const mediaStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' },
+    });
+    setStream(mediaStream);
+    setIsCameraOpen(true);
+  } catch (error) {
+    console.error('Camera error:', error);
+    setError('Cannot access camera. Check permissions.');
   }
-
-  const canvas = canvasRef.current;
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  canvas.toBlob((blob) => {
-    if (!blob) {
-      console.error("❌ canvas.toBlob() returned null.");
-      alert("Could not capture image. Please try again.");
-      return;
-    }
-
-    const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
-    handleImageSelection(file, URL.createObjectURL(blob));
-
-    // ✅ Close camera *after* capture finishes
-    closeCamera();
-  }, "image/jpeg");
 };
 
+const closeCamera = () => {
+  setIsCameraOpen(false);
+};
+
+// --- Attach / Cleanup stream ---
+useEffect(() => {
+  if (isCameraOpen && stream && videoRef.current) {
+    videoRef.current.srcObject = stream;
+    videoRef.current.play().catch((err) =>
+      console.error("Error playing video:", err)
+    );
+  }
+
+  // Cleanup when closing camera or unmounting
+  return () => {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+    }
+  };
+}, [isCameraOpen, stream]);
+
+
+  const handleCapture = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    canvas.toBlob((blob) => {
+      const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' });
+      handleImageSelection(file, URL.createObjectURL(blob));
+    }, 'image/jpeg');
+    closeCamera();
+  };
 
   const resetState = () => {
     setImagePreview(null);
@@ -544,14 +541,7 @@ const StyleTransferPage = () => {
         {isCameraOpen && (
           <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-lg px-4">
             <div className="w-full max-w-4xl p-4 bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl">
-              <video
-  ref={videoRef}
-  autoPlay
-  playsInline
-  muted   // 🔥 required for mobile autoplay
-  className="w-full max-w-4xl h-auto rounded-lg shadow-2xl"
-/>
-
+              <video ref={videoRef} autoPlay playsInline className="w-full h-auto rounded-2xl shadow-xl" />
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 mt-8">
               <StyledButton onClick={handleCapture} icon={<Camera className="w-6 h-6" />} text="Capture Photo" primary />

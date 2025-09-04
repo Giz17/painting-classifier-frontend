@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { LoaderCircle, Download, X, Palette } from 'lucide-react';
-import { useNavigate} from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../lib/supabase';
 import ba from '../assets/ab.jpg'; // Background image
 import Image from '../assets/4.png'
-import Footer from '../components/footer'; // Importing Footer
-import API_BASE_URL from "../utils/config";
+import Footer from '../components/Footer'; // Importing Footer
 
+const links = [
+  { name: 'Home', path: '/' },
+  { name: 'Gallery', path: '/gallery' },
+  { name: 'History', path: '/history' },
+  { name: 'About', path: '/about' },
+];
 
 const GalleryPage = ({ setPage }) => {
   const [groupedImages, setGroupedImages] = useState({});
@@ -28,7 +33,7 @@ const GalleryPage = ({ setPage }) => {
 
       const user_email = user.email;
       try {
-        const response = await fetch(`${API_BASE_URL}/gallery/?user_email=${user_email}`);
+        const response = await fetch(`http://localhost:8000/gallery/?user_email=${user_email}`);
         const data = await response.json();
         setGroupedImages(data || {});
       } catch (err) {
@@ -50,22 +55,32 @@ const GalleryPage = ({ setPage }) => {
   }
 
   const handleDownload = async () => {
-    try {
-      const response = await fetch(selectedImage.url);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = selectedImage.name || 'painting.jpg';
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error("Download failed:", error);
-      alert("Failed to download image.");
+  try {
+    const response = await fetch(selectedImage.url);
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    // Force extension if blob.type is not an image
+    let extension = "jpg";
+    if (blob.type.startsWith("image/")) {
+      extension = blob.type.split("/")[1];
     }
-  };
+
+    const filename = `${selectedImage.name || "painting"}.${extension}`;
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Download failed:", error);
+    alert("Failed to download image.");
+  }
+};
+
 
   const handleStyleTransfer = async () => {
     try {

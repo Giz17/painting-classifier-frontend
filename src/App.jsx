@@ -16,7 +16,7 @@ import StyleTransferPage from './pages/StyleTransferPage';
 
 
 const App = () => {
-  const [theme, setTheme] = useState('light');
+  const [theme, setTheme] = useState('dark');
   const [history, setHistory] = useState([]);
   const [filter, setFilter] = useState('');
 

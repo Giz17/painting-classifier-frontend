@@ -1,11 +1,11 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Upload, BrainCircuit, Camera, Loader2, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ActionButton from '../components/ActionButton';
 import { classifyImage } from '../utils/classifyImage';
 import Aurora from '../components/Aurora';
 import { supabase } from '../lib/supabase';
-import Footer from '../components/footer';
+import Footer from '../components/Footer';
 
 const UploadPage = ({ setHistory }) => {
   const [uploadedImage, setUploadedImage] = useState(null);
@@ -33,32 +33,28 @@ const UploadPage = ({ setHistory }) => {
     }
   };
 
-// --- Camera ---
-const openCamera = async () => {
-  try {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' }, // or "user"
-      audio: false
-    });
-
-    if (videoRef.current) {
-      videoRef.current.srcObject = mediaStream;
-
-      // 🔥 Ensure video actually starts playing
-      await videoRef.current.play();
+  // --- Camera ---
+  const openCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      });
+      setStream(mediaStream);
+      setIsCameraOpen(true);
+      // Removed direct assignment to videoRef.srcObject here
+    } catch (error) {
+      console.error('Camera error:', error);
+      alert('Cannot access camera. Check permissions.');
     }
+  };
 
-    setStream(mediaStream);
-    setIsCameraOpen(true);
-  } catch (error) {
-    console.error('Camera error:', error);
-    alert('Cannot access camera. Check permissions.');
-  }
-};
+  // Attach stream to video element whenever stream changes
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream;
+    }
+  }, [stream]);
 
-
-
-  
   const closeCamera = () => {
     if (stream) stream.getTracks().forEach(track => track.stop());
     setIsCameraOpen(false);
@@ -66,37 +62,26 @@ const openCamera = async () => {
   };
 
   const handleCapture = () => {
-  if (videoRef.current && canvasRef.current) {
-    const video = videoRef.current;
+    if (videoRef.current && canvasRef.current) {
+      const video = videoRef.current;
+      const canvas = canvasRef.current;
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
 
-    if (video.videoWidth === 0 || video.videoHeight === 0) {
-      console.error("❌ Video not ready for capture yet.");
-      alert("Camera is not ready. Try again.");
-      return;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' });
+        setUploadedImage(URL.createObjectURL(blob));
+        setImageFile(file);
+      }, 'image/jpeg');
+
+      closeCamera();
+    } else {
+      alert('Capture failed – please try again.');
     }
-
-    const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        console.error("❌ canvas.toBlob() returned null.");
-        return;
-      }
-
-      const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' });
-      setUploadedImage(URL.createObjectURL(blob));
-      setImageFile(file);
-    }, 'image/jpeg');
-
-    closeCamera();
-  }
-};
-
+  };
 
   // --- Classification ---
   const handleClassify = async () => {
@@ -111,15 +96,6 @@ const openCamera = async () => {
         navigate('/auth');
         return;
       }
-
-      // Debug logging
-      console.log('UploadPage - About to classify with:', {
-        file: file,
-        fileName: file?.name,
-        fileSize: file?.size,
-        uploadedImage: uploadedImage,
-        imageType: typeof uploadedImage
-      });
 
       const result = await classifyImage(file, user.email);
 
@@ -136,20 +112,11 @@ const openCamera = async () => {
 
       setHistory(prev => [...prev, classification]);
 
-      // Debug logging before navigation
-      console.log('UploadPage - Navigating to results with:', {
-        result: classification,
-        image: uploadedImage,
-        file: file,
-        fileExists: !!file
-      });
-
-      //  FIX: Pass the file along with the result and image
       navigate('/results', {
-        state: { 
-          result: classification, 
+        state: {
+          result: classification,
           image: uploadedImage,
-          file: file  // ✅ This was missing!
+          file: file
         },
       });
     } catch (error) {
@@ -164,7 +131,13 @@ const openCamera = async () => {
     <div className="relative flex flex-col min-h-screen bg-white dark:bg-gray-900 overflow-hidden">
       {/* Aurora Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        
+        <Aurora
+          className="absolute top-0 left-0 w-1/2 h-full"
+          colorStops={['#3A29FF', '#FF94B4', '#FF3232']}
+          blend={0.4}
+          amplitude={1.2}
+          speed={0.4}
+        />
         <Aurora
           className="absolute top-0 right-0 w-1/2 h-full"
           colorStops={['#FF3232', '#FF94B4', '#3A29FF']}
@@ -221,14 +194,7 @@ const openCamera = async () => {
       {/* Camera Modal */}
       {isCameraOpen && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
-          <video
-  ref={videoRef}
-  autoPlay
-  playsInline
-  muted   // 🔥 required for mobile autoplay
-  className="w-full max-w-4xl h-auto rounded-lg shadow-2xl"
-/>
-
+          <video ref={videoRef} autoPlay playsInline muted className="w-full max-w-4xl h-auto rounded-lg shadow-2xl" />
           <div className="flex items-center gap-6 mt-6">
             <ActionButton onClick={handleCapture} icon={<Camera />} text="Capture" primary />
             <button
