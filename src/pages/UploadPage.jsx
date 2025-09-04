@@ -55,24 +55,37 @@ const UploadPage = ({ setHistory }) => {
   };
 
   const handleCapture = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+  if (videoRef.current && canvasRef.current) {
+    const video = videoRef.current;
 
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-      canvas.toBlob((blob) => {
-        const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' });
-        setUploadedImage(URL.createObjectURL(blob));
-        setImageFile(file);
-      }, 'image/jpeg');
-
-      closeCamera();
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      console.error("❌ Video not ready for capture yet.");
+      alert("Camera is not ready. Try again.");
+      return;
     }
-  };
+
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        console.error("❌ canvas.toBlob() returned null.");
+        return;
+      }
+
+      const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' });
+      setUploadedImage(URL.createObjectURL(blob));
+      setImageFile(file);
+    }, 'image/jpeg');
+
+    closeCamera();
+  }
+};
+
 
   // --- Classification ---
   const handleClassify = async () => {

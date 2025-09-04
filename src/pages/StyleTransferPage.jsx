@@ -178,19 +178,37 @@ const StyleTransferPage = () => {
   };
 
   const handleCapture = () => {
-    if (!videoRef.current || !canvasRef.current) return;
-    const video = videoRef.current;
-    const canvas = canvasRef.current;
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    canvas.toBlob((blob) => {
-      const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' });
-      handleImageSelection(file, URL.createObjectURL(blob));
-    }, 'image/jpeg');
+  if (!videoRef.current || !canvasRef.current) return;
+  const video = videoRef.current;
+
+  // ✅ Ensure video is ready
+  if (video.videoWidth === 0 || video.videoHeight === 0) {
+    console.error("❌ Video not ready yet for capture.");
+    alert("Camera is not ready. Please try again.");
+    return;
+  }
+
+  const canvas = canvasRef.current;
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  canvas.toBlob((blob) => {
+    if (!blob) {
+      console.error("❌ canvas.toBlob() returned null.");
+      alert("Could not capture image. Please try again.");
+      return;
+    }
+
+    const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
+    handleImageSelection(file, URL.createObjectURL(blob));
+
+    // ✅ Close camera *after* capture finishes
     closeCamera();
-  };
+  }, "image/jpeg");
+};
+
 
   const resetState = () => {
     setImagePreview(null);
