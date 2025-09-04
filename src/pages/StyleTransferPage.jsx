@@ -12,7 +12,8 @@ import candyImg from '../assets/style1.jpg';
 import mosaicImg from '../assets/style4.jpg';
 import udnieImg from '../assets/style7.jpg';
 import rainPrincessImg from '../assets/style5.jpg';
-import API_BASE_URL from "./config";
+import API_BASE_URL from "../utils/config";
+
 console.log("Image URL:", Image); // Add this line
 
 const styleImages = {
