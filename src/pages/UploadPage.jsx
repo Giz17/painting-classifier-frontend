@@ -35,24 +35,32 @@ const UploadPage = ({ setHistory }) => {
 
   // --- Camera ---
   const openCamera = async () => {
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
-      setStream(mediaStream);
-      setIsCameraOpen(true);
-      if (videoRef.current) videoRef.current.srcObject = mediaStream;
-    } catch (error) {
-      console.error('Camera error:', error);
-      alert('Cannot access camera. Check permissions.');
-    }
-  };
+  try {
+    const mediaStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: "environment" },
+    });
+    setStream(mediaStream);
+    setIsCameraOpen(true);
 
-  const closeCamera = () => {
-    if (stream) stream.getTracks().forEach(track => track.stop());
-    setIsCameraOpen(false);
-    setStream(null);
-  };
+    if (videoRef.current) {
+      videoRef.current.srcObject = mediaStream;
+
+      // Ensure metadata is loaded before capture
+      videoRef.current.onloadedmetadata = async () => {
+        try {
+          await videoRef.current.play();
+          console.log("Camera is ready:", videoRef.current.videoWidth, videoRef.current.videoHeight);
+        } catch (err) {
+          console.error("Video play failed:", err);
+        }
+      };
+    }
+  } catch (error) {
+    console.error("Camera error:", error);
+    alert("Cannot access camera. Check permissions.");
+  }
+};
+
 
   const handleCapture = () => {
   if (videoRef.current && canvasRef.current) {
