@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { Upload, BrainCircuit, Camera, Loader2, X, Play } from 'lucide-react';
+import { Upload, BrainCircuit, Camera, Loader2, X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import ActionButton from '../components/ActionButton';
 import { classifyImage } from '../utils/classifyImage';
@@ -13,7 +13,6 @@ const UploadPage = ({ setHistory }) => {
   const [file, setImageFile] = useState(null);
   const [isCameraOpen, setIsCameraOpen] = useState(false);
   const [stream, setStream] = useState(null);
-  const [videoReady, setVideoReady] = useState(false);
 
   const fileInputRef = useRef(null);
   const videoRef = useRef(null);
@@ -22,7 +21,6 @@ const UploadPage = ({ setHistory }) => {
 
   // --- File Upload ---
   const triggerFileUpload = () => fileInputRef.current.click();
-
   const handleFileChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -35,72 +33,70 @@ const UploadPage = ({ setHistory }) => {
     }
   };
 
-  // --- Camera ---
-  const openCamera = async () => {
-    try {
-      setVideoReady(false);
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' },
-      });
+// --- Camera ---
+const openCamera = async () => {
+  try {
+    const mediaStream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }, // or "user"
+      audio: false
+    });
 
-      setStream(mediaStream);
-      setIsCameraOpen(true);
-
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream;
-        videoRef.current.onloadeddata = () => {
-          setVideoReady(true);
-        };
-      }
-    } catch (error) {
-      console.error('Camera error:', error);
-      alert('Cannot access camera. Check permissions.');
-    }
-  };
-
-  const startVideo = () => {
     if (videoRef.current) {
-      videoRef.current.play();
-    }
-  };
+      videoRef.current.srcObject = mediaStream;
 
+      // 🔥 Ensure video actually starts playing
+      await videoRef.current.play();
+    }
+
+    setStream(mediaStream);
+    setIsCameraOpen(true);
+  } catch (error) {
+    console.error('Camera error:', error);
+    alert('Cannot access camera. Check permissions.');
+  }
+};
+
+
+
+  
   const closeCamera = () => {
-    if (stream) stream.getTracks().forEach((track) => track.stop());
+    if (stream) stream.getTracks().forEach(track => track.stop());
     setIsCameraOpen(false);
     setStream(null);
-    setVideoReady(false);
   };
 
   const handleCapture = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
+  if (videoRef.current && canvasRef.current) {
+    const video = videoRef.current;
 
-      if (video.videoWidth === 0 || video.videoHeight === 0) {
-        console.error("❌ Video not ready for capture yet.");
-        alert("Camera is not ready. Try again.");
+    if (video.videoWidth === 0 || video.videoHeight === 0) {
+      console.error("❌ Video not ready for capture yet.");
+      alert("Camera is not ready. Try again.");
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        console.error("❌ canvas.toBlob() returned null.");
         return;
       }
 
-      const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' });
+      setUploadedImage(URL.createObjectURL(blob));
+      setImageFile(file);
+    }, 'image/jpeg');
 
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    closeCamera();
+  }
+};
 
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          console.error("❌ canvas.toBlob() returned null.");
-          return;
-        }
-        const file = new File([blob], 'captured.jpg', { type: 'image/jpeg' });
-        setUploadedImage(URL.createObjectURL(blob));
-        setImageFile(file);
-      }, 'image/jpeg');
-
-      closeCamera();
-    }
-  };
 
   // --- Classification ---
   const handleClassify = async () => {
@@ -108,15 +104,25 @@ const UploadPage = ({ setHistory }) => {
 
     try {
       setLoading(true);
-
       const { data: { user } } = await supabase.auth.getUser();
+
       if (!user) {
         alert("Please log in to classify images.");
         navigate('/auth');
         return;
       }
 
+      // Debug logging
+      console.log('UploadPage - About to classify with:', {
+        file: file,
+        fileName: file?.name,
+        fileSize: file?.size,
+        uploadedImage: uploadedImage,
+        imageType: typeof uploadedImage
+      });
+
       const result = await classifyImage(file, user.email);
+
       const classification = {
         id: Date.now(),
         style: result.predictions[0][0],
@@ -128,9 +134,23 @@ const UploadPage = ({ setHistory }) => {
         image_url: result.image_url,
       };
 
-      setHistory((prev) => [...prev, classification]);
+      setHistory(prev => [...prev, classification]);
+
+      // Debug logging before navigation
+      console.log('UploadPage - Navigating to results with:', {
+        result: classification,
+        image: uploadedImage,
+        file: file,
+        fileExists: !!file
+      });
+
+      //  FIX: Pass the file along with the result and image
       navigate('/results', {
-        state: { result: classification, image: uploadedImage, file },
+        state: { 
+          result: classification, 
+          image: uploadedImage,
+          file: file  // ✅ This was missing!
+        },
       });
     } catch (error) {
       console.error('Classification error:', error);
@@ -144,6 +164,7 @@ const UploadPage = ({ setHistory }) => {
     <div className="relative flex flex-col min-h-screen bg-white dark:bg-gray-900 overflow-hidden">
       {/* Aurora Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
+        
         <Aurora
           className="absolute top-0 right-0 w-1/2 h-full"
           colorStops={['#FF3232', '#FF94B4', '#3A29FF']}
@@ -154,13 +175,7 @@ const UploadPage = ({ setHistory }) => {
       </div>
 
       {/* Hidden inputs */}
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleFileChange}
-        ref={fileInputRef}
-        className="hidden"
-      />
+      <input type="file" accept="image/*" onChange={handleFileChange} ref={fileInputRef} className="hidden" />
       <canvas ref={canvasRef} className="hidden" />
 
       {/* Main Upload Container */}
@@ -169,57 +184,31 @@ const UploadPage = ({ setHistory }) => {
           {!uploadedImage ? (
             <>
               <Upload className="w-16 h-16 text-gray-500 dark:text-gray-400 mb-6 mx-auto" />
-              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">
-                Upload or Capture
-              </h2>
+              <h2 className="text-2xl font-semibold text-gray-800 dark:text-white mb-2">Upload or Capture</h2>
               <p className="text-black dark:text-white mb-8">
                 Select an image file or use your camera to begin.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
-                <ActionButton
-                  onClick={triggerFileUpload}
-                  icon={<Upload />}
-                  text="Select Image"
-                  primary
-                />
-                <ActionButton
-                  onClick={openCamera}
-                  icon={<Camera />}
-                  text="Use Camera"
-                />
+                <ActionButton onClick={triggerFileUpload} icon={<Upload />} text="Select Image" primary />
+                <ActionButton onClick={openCamera} icon={<Camera />} text="Use Camera" />
               </div>
             </>
           ) : (
             <>
-              <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">
-                Image Preview
-              </h3>
+              <h3 className="text-xl font-semibold text-gray-800 dark:text-white mb-4">Image Preview</h3>
               <div className="w-full flex justify-center mb-6">
-                <img
-                  src={uploadedImage}
-                  alt="Uploaded artwork"
-                  className="max-h-[400px] w-auto rounded-xl shadow-lg object-contain"
-                />
+                <img src={uploadedImage} alt="Uploaded artwork" className="max-h-[400px] w-auto rounded-xl shadow-lg object-contain" />
               </div>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <ActionButton
                   onClick={handleClassify}
-                  icon={
-                    loading ? (
-                      <Loader2 className="animate-spin" />
-                    ) : (
-                      <BrainCircuit />
-                    )
-                  }
+                  icon={loading ? <Loader2 className="animate-spin" /> : <BrainCircuit />}
                   text={loading ? 'Classifying...' : 'Classify'}
                   primary
                   disabled={loading}
                 />
                 <ActionButton
-                  onClick={() => {
-                    setUploadedImage(null);
-                    setImageFile(null);
-                  }}
+                  onClick={() => { setUploadedImage(null); setImageFile(null); }}
                   icon={<Upload />}
                   text="Reclassify"
                 />
@@ -233,27 +222,15 @@ const UploadPage = ({ setHistory }) => {
       {isCameraOpen && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
           <video
-            ref={videoRef}
-            playsInline
-            muted
-            className="w-full max-w-4xl h-auto rounded-lg shadow-2xl"
-          />
+  ref={videoRef}
+  autoPlay
+  playsInline
+  muted   // 🔥 required for mobile autoplay
+  className="w-full max-w-4xl h-auto rounded-lg shadow-2xl"
+/>
+
           <div className="flex items-center gap-6 mt-6">
-            {!videoReady ? (
-              <ActionButton
-                onClick={startVideo}
-                icon={<Play />}
-                text="Start Camera"
-                primary
-              />
-            ) : (
-              <ActionButton
-                onClick={handleCapture}
-                icon={<Camera />}
-                text="Capture"
-                primary
-              />
-            )}
+            <ActionButton onClick={handleCapture} icon={<Camera />} text="Capture" primary />
             <button
               onClick={closeCamera}
               className="p-3 rounded-full bg-red-500 hover:bg-red-600 text-white transition-colors"
