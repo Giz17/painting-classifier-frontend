@@ -32,7 +32,8 @@ const AuthPage = () => {
 
     try {
       if (isSigningUp) {
-        const hashedPassword = hashPassword(password);     const { error } = await supabase.auth.signUp({ 
+        const hashedPassword = hashPassword(password);     
+        const { error } = await supabase.auth.signUp({ 
         email, 
         password: hashedPassword  // Pass the hashed password
       });
@@ -70,7 +71,10 @@ const AuthPage = () => {
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`
+        
+      redirectTo: "https://painting-classifier-frontend.vercel.app/reset-password",
+
+
       });
 
       if (error) {

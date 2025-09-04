@@ -526,7 +526,14 @@ const StyleTransferPage = () => {
         {isCameraOpen && (
           <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 backdrop-blur-lg px-4">
             <div className="w-full max-w-4xl p-4 bg-white/5 backdrop-blur-md rounded-3xl border border-white/10 shadow-2xl">
-              <video ref={videoRef} autoPlay playsInline className="w-full h-auto rounded-2xl shadow-xl" />
+              <video
+  ref={videoRef}
+  autoPlay
+  playsInline
+  muted   // 🔥 required for mobile autoplay
+  className="w-full max-w-4xl h-auto rounded-lg shadow-2xl"
+/>
+
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 mt-8">
               <StyledButton onClick={handleCapture} icon={<Camera className="w-6 h-6" />} text="Capture Photo" primary />

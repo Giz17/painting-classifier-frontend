@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
+import CryptoJS from 'crypto-js'; // ✅ Add this import
+
+// Define the hashing function
+const hashPassword = (password) => {
+  return CryptoJS.SHA256(password).toString(CryptoJS.enc.Hex);
+};
 
 const ResetPasswordPage = () => {
   const [searchParams] = useSearchParams();
@@ -17,9 +23,8 @@ const ResetPasswordPage = () => {
   const handlePasswordReset = async () => {
     setError("");
     setInfo("");
-
     const { error } = await supabase.auth.updateUser({
-      password,
+      password: hashPassword(password),
     });
 
     if (error) {

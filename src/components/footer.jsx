@@ -71,10 +71,10 @@ const Footer = () => {
                 href="tel:+1234567890"
                 className="underline hover:text-indigo-600 dark:hover:text-indigo-400"
               >
-                +1 (234) 567-890
+                +91 22-3456-7890
               </a>
             </p>
-            <p>123 Art Street, Creativity City</p>
+            <p>Software Technology Park, L-44, Verna Industrial Estate, Verna-Goa</p>
           </address>
         </div>
 

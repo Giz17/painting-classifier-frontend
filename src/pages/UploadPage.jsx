@@ -120,7 +120,7 @@ const UploadPage = ({ setHistory }) => {
         fileExists: !!file
       });
 
-      // 🔥 FIX: Pass the file along with the result and image
+      //  FIX: Pass the file along with the result and image
       navigate('/results', {
         state: { 
           result: classification, 
@@ -197,7 +197,14 @@ const UploadPage = ({ setHistory }) => {
       {/* Camera Modal */}
       {isCameraOpen && (
         <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 backdrop-blur-sm">
-          <video ref={videoRef} autoPlay playsInline className="w-full max-w-4xl h-auto rounded-lg shadow-2xl" />
+          <video
+  ref={videoRef}
+  autoPlay
+  playsInline
+  muted   // 🔥 required for mobile autoplay
+  className="w-full max-w-4xl h-auto rounded-lg shadow-2xl"
+/>
+
           <div className="flex items-center gap-6 mt-6">
             <ActionButton onClick={handleCapture} icon={<Camera />} text="Capture" primary />
             <button

@@ -50,8 +50,7 @@ const HistoryPage = () => {
 
   const deleteItem = async (id) => {
     try {
-      const res = await fetch(
-        `http://localhost:8000/delete/?prediction_id=${id}`,
+      const res = await fetch(`${API_BASE_URL}/delete/?prediction_id=${id}`,
         { method: 'DELETE' }
       );
       if (res.ok) {

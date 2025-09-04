@@ -137,7 +137,7 @@ const PredictionDetail = () => {
         {/* Back Button */}
         <Link
           to="/history"
-          className="inline-flex items-center gap-2 text-gray-600 dark:text-gray-300 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors mb-6"
+          className="inline-flex items-center gap-2 text-gray-300 hover:text-indigo-400 transition-colors mb-6"
         >
           <ArrowLeft size={20} />
           Back to History

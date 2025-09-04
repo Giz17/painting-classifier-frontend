@@ -7,7 +7,7 @@ import Footer from "../components/footer"; // <-- importing footer component
 
 const items = [
   {
-    image: "https://i.pravatar.cc/300?img=1",
+    image: "https://ui-avatars.com/api/?name=Atharv+Verlekar&background=647FBC&color=fff",
     title: "Atharv S. Verlekar",
     subtitle: "Frontend Developer",
     borderColor: "#3B82F6",
@@ -15,7 +15,7 @@ const items = [
     url: "",
   },
   {
-    image: "https://i.pravatar.cc/300?img=2",
+    image: "https://ui-avatars.com/api/?name=Giselle+Fernandes&background=67C090&color=fff",
     title: "Giselle Fernandes",
     subtitle: "Backend Engineer",
     borderColor: "#10B981",
@@ -23,23 +23,23 @@ const items = [
     url: "",
   },
   {
-    image: "https://i.pravatar.cc/300?img=3",
-    title: "Allen Payapally",
+    image: "https://ui-avatars.com/api/?name=Allen+Payappilly&background=C71E64&color=fff",
+    title: "Allen Payappilly",
     subtitle: "UI/UX Designer",
     borderColor: "#EC4899",
     gradient: "linear-gradient(145deg, #EC4899, #000)",
     url: "",
   },
   {
-    image: "https://i.pravatar.cc/300?img=4",
+    image: "https://ui-avatars.com/api/?name=Rashi+Kavlekar&background=FCC61D&color=fff",
     title: "Rashi Kavlekar",
-    subtitle: "DevOps Engineer",
+    subtitle: "Frontend Engineer",
     borderColor: "#F59E0B",
     gradient: "linear-gradient(180deg, #F59E0B, #000)",
     url: "",
   },
   {
-    image: "https://i.pravatar.cc/300?img=5",
+    image: "https://ui-avatars.com/api/?name=Shane+Furtado&background=4D2D8C&color=fff",
     title: "Shane Furtado",
     subtitle: "Project Manager",
     borderColor: "#8B5CF6",
