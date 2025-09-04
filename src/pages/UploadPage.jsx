@@ -5,7 +5,7 @@ import ActionButton from '../components/ActionButton';
 import { classifyImage } from '../utils/classifyImage';
 import Aurora from '../components/Aurora';
 import { supabase } from '../lib/supabase';
-import Footer from '../components/Footer';
+import Footer from '../components/footer';
 
 const UploadPage = ({ setHistory }) => {
   const [uploadedImage, setUploadedImage] = useState(null);

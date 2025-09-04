@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Upload, Palette, Download, Loader2, Camera, X, ArrowRight, Wand2, ArrowLeft, Smile, Droplets, Zap, Check } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Orb from '../components/Orb';
-import Footer from '../components/Footer';
+import Footer from '../components/footer';
 import { supabase } from '../lib/supabase';
 import { styleTransferImage } from '../utils/styleTransferImage';
 import waImage from '../assets/wa.jpg'; // Light mode background
