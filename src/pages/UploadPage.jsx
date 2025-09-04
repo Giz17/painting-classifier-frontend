@@ -34,35 +34,19 @@ const UploadPage = ({ setHistory }) => {
   };
 
   // --- Camera ---
- 
-const openCamera = async () => {
-  try {
-    const mediaStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment' },
-    });
-
-    setStream(mediaStream);
-    setIsCameraOpen(true);
-
-    if (videoRef.current) {
-      videoRef.current.srcObject = mediaStream;
-
-      // ✅ Ensure video plays once metadata is ready
-      videoRef.current.onloadedmetadata = async () => {
-        try {
-          await videoRef.current.play();
-          console.log("📷 Camera started");
-        } catch (err) {
-          console.error("Autoplay blocked:", err);
-        }
-      };
+  const openCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' },
+      });
+      setStream(mediaStream);
+      setIsCameraOpen(true);
+      if (videoRef.current) videoRef.current.srcObject = mediaStream;
+    } catch (error) {
+      console.error('Camera error:', error);
+      alert('Cannot access camera. Check permissions.');
     }
-  } catch (error) {
-    console.error('Camera error:', error);
-    alert('Cannot access camera. Check permissions.');
-  }
-};
-
+  };
 
   const closeCamera = () => {
     if (stream) stream.getTracks().forEach(track => track.stop());
