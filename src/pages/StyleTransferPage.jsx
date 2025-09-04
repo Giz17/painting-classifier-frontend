@@ -119,7 +119,7 @@ const StyleTransferPage = () => {
 
   const fetchAvailableStyles = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/styles/`);
+      const response = await fetch(`${API_BASE_URL}/styles`);
       const styles = await response.json();
 
       // Merge fetched styles with local definitions
