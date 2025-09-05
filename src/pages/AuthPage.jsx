@@ -206,27 +206,7 @@ const AuthPage = () => {
             </>
           )}
 
-          {!isResetMode && (
-            <>
-              <div className="w-full border-t border-gray-300 dark:border-gray-700 mt-4 pt-4 text-sm text-gray-500">
-                Or sign in with
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => handleOAuthLogin('google')}
-                  className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-md"
-                >
-                  Google
-                </button>
-                <button
-                  onClick={() => handleOAuthLogin('github')}
-                  className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-md"
-                >
-                  GitHub
-                </button>
-              </div>
-            </>
-          )}
+          
 
           {isResetMode && (
             <button
